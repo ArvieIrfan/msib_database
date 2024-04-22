@@ -7,19 +7,19 @@ Soal 2.4
 ->  SELECT * FROM produk ORDER BY harga_beli DESC LIMIT 2;
 
 2. Tampilkan produk yang paling murah
-->  SELECT * FROM produk ORDER BY harga_beli LIMIT 1;
+->  SELECT * FROM produk ORDER BY harga_beli ASC LIMIT 1;
 
 3. Tampilkan produk yang stoknya paling banyak
 ->  SELECT * FROM produk ORDER BY stok DESC LIMIT 1;
 
 4. Tampilkan dua produk yang stoknya paling sedikit
-->  SELECT * FROM produk ORDER BY stok LIMIT 2;
+->  SELECT * FROM produk ORDER BY stok ASC LIMIT 2;
 
 5. Tampilkan pelanggan yang paling muda
 ->  SELECT * FROM pelanggan ORDER BY tgl_lahir DESC LIMIT 1;
 
 6. Tampilkan pelanggan yang paling tua
-->  SELECT * FROM pelanggan ORDER BY tgl_lahir LIMIT 1;
+->  SELECT * FROM pelanggan ORDER BY tgl_lahir ASC LIMIT 1;
 
 
 
