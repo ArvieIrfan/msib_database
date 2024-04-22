@@ -1,0 +1,22 @@
+Nama : M.Irfan Hamdi
+Asal    : Universitas Metamedia
+Grup   : 1
+
+Soal 2.1 
+1. Tampilkan seluruh data produk diurutkan berdasarkan harga_jual mulai dari yang termahal
+->  SELECT * FROM produk ORDER BY harga_jual DESC;
+
+2. Tampilkan data kode, nama, tmp_lahir, tgl_lahir dari table pelanggan
+->  SELECT kode, nama, tmp_lahir, tgl_lahir FROM pelanggan;
+
+3. Tampilkan kode,nama,stok dari table produk yang stok-nya hanya 4
+->  SELECT kode,nama, stok FROM produk WHERE stok = 4;
+
+4. Tampilkan seluruh data pelanggan yang tempat lahirnya Jakarta
+->  SELECT * from pelanggan WHERE tmp_lahir='jakarta';
+
+5. Tampilkan kode, nama, tmp_lahir, tgl_lahir dari pelanggan diurutkan dari yang paling muda usianya
+->  SELECT kode, nama, tmp_lahir, tgl_lahir FROM pelanggan ORDER BY tgl_lahir DESC;
+
+
+
