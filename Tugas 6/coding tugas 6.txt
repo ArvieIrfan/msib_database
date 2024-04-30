@@ -1,0 +1,127 @@
+Nama : M.Irfan Hamdi
+Asal	   : Universitas Metamedia
+Grup   : 1
+
+Bagian 6.1
+Jawaban no 1
+MariaDB [dbpos_sib6]> DELIMITER $$
+MariaDB [dbpos_sib6]> CREATE PROCEDURE pro_naik(
+    ->     IN jenis_produk INT,
+    ->     IN persentasi_kenaikan INT )
+    ->     BEGIN
+    ->     UPDATE produk SET harga_jual = harga_jual + (harga_jual * persentasi_kenaikan / 100)
+    ->     WHERE jenis_produk_id = jenis_produk;
+    ->     END $$
+MariaDB [dbpos_sib6]> DELIMITER ;
+MariaDB [dbpos_sib6]> CALL pro_naik(1,4);
+
+Jawaban no 2
+MariaDB [dbpos_sib6]> DELIMITER $$
+MariaDB [dbpos_sib6]> CREATE FUNCTION umur(tgl_lahir DATE)
+    ->     RETURNS INT
+    ->     BEGIN
+    ->     DECLARE umur INT;
+    ->     SET umur = YEAR(CURDATE()) - YEAR(tgl_lahir);
+    ->     RETURN umur;
+    ->     END $$
+Query OK, 0 rows affected (0.003 sec)
+
+MariaDB [dbpos_sib6]> DELIMITER ;
+MariaDB [dbpos_sib6]> SELECT nama, umur(tgl_lahir) AS umur FROM pelanggan;
+
+Jawaban no3
+MariaDB [dbpos_sib6]> DELIMITER $$
+MariaDB [dbpos_sib6]>
+MariaDB [dbpos_sib6]> CREATE FUNCTION kategori_harga(harga DOUBLE) RETURNS VARCHAR(20)
+    -> BEGIN
+    ->     DECLARE kategori VARCHAR(20);
+    ->
+    ->     SET kategori =
+    ->     CASE
+    ->         WHEN harga <= 500000 THEN 'murah'
+    ->         WHEN harga BETWEEN 500000 AND 3000000 THEN 'sedang'
+    ->         WHEN harga BETWEEN 3000000 AND 10000000 THEN 'mahal'
+    ->         ELSE 'sangat mahal'
+    ->     END;
+    ->
+    ->     RETURN kategori;
+    -> END$$
+MariaDB [dbpos_sib6]>
+MariaDB [dbpos_sib6]> DELIMITER ;
+MariaDB [dbpos_sib6]> SELECT kategori_harga(750000);
+
+
+bagian 6.2
+Jawaban no 1
+
+A. Pelanggan memesan didalam table pesanan
+MariaDB [dbpos_sib6]> SELECT * FROM pesanan;
+
+C. Didalam table pembayaran tambahkan kolom status_pembayaran
+MariaDB [dbpos_sib6]> ALTER TABLE pembayaran ADD status_pembayaran varchar(25);
+
+B. Dilanjutkan dengan proses pembayaran di table pembayaran
+DELIMITER $$
+CREATE TRIGGER cek_pembayaran BEFORE INSERT ON pembayaran
+FOR EACH ROW
+BEGIN
+DECLARE total_bayar DECIMAL(10, 2);
+DECLARE total_pesanan DECIMAL(10, 2);
+SELECT SUM(jumlah) INTO total_bayar FROM pembayaran WHERE pesanan_id = NEW.pesanan_id;
+SELECT total INTO total_pesanan FROM pesanan WHERE id = NEW.pesanan_id;
+
+D. Jika pesanan sudah dibayar maka status pembayaran akan berubah menjadi lunas
+SET NEW.status_pembayaran = 
+CASE
+    WHEN total_bayar + NEW.jumlah >= total_pesanan THEN 'Lunas'
+    ELSE 'Belum Lunas'
+END;
+END $$
+DELIMITER ;
+-- Menambahkan data pada tabel pembayaran
+INSERT INTO pembayaran (nokuitansi, tanggal, jumlah, ke, pesanan_id)
+VALUES ('KWI001', '2023-03-03', 15000, 3, 3);
+
+
+Jawaban no 2
+MariaDB [dbpos_sib6]> DELIMITER $$
+MariaDB [dbpos_sib6]> CREATE PROCEDURE kurangi_stok(IN produk_id INT, IN jumlah_pesanan INT)
+    -> BEGIN
+    ->   DECLARE stok_produk INT;
+
+ -- Dapatkan jumlah stok produk saat ini
+    ->   SELECT stok INTO stok_produk FROM produk WHERE id = produk_id;
+
+-- Kurangi stok dengan jumlah pesanan
+    ->   SET stok_produk = stok_produk - jumlah_pesanan;
+
+ -- Pastikan stok tidak negatif
+    ->   IF stok_produk < 0 THEN
+    ->     SIGNAL SQLSTATE '45000'
+    ->     SET MESSAGE_TEXT = 'Stok produk tidak mencukupi';
+    ->   END IF;
+
+  -- Update stok produk yang telah dikurangi
+    ->   UPDATE produk SET stok = stok_produk WHERE id = produk_id;
+    -> END $$
+MariaDB [dbpos_sib6]> DELIMITER ;
+
+
+Jawaban no3
+MariaDB [dbpos_sib6]> DELIMITER $$
+MariaDB [dbpos_sib6]> CREATE TRIGGER kurangi_stok AFTER INSERT ON pesanan_items
+    -> FOR EACH ROW
+    -> BEGIN
+
+-- Memanggil stored procedure kurangi_stok untuk mengurangi stok produk
+    ->   CALL kurangi_stok(NEW.produk_id, NEW.qty);
+    -> END $$
+MariaDB [dbpos_sib6]> DELIMITER ;
+
+MariaDB [dbpos_sib6]> INSERT INTO pesanan_items (produk_id, pesanan_id, qty, harga) VALUES
+    -> (7, 8, 5, 17500);
+
+
+
+
+
